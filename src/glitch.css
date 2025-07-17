@@ -1,0 +1,27 @@
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  width: 100%;
+  opacity: 0.7;
+}
+
+.glitch::before {
+  color: #ff00ff;
+  top: -1px;
+  left: 1px;
+  z-index: -1;
+}
+
+.glitch::after {
+  color: #00ffff;
+  top: 1px;
+  left: -1px;
+  z-index: -2;
+}
