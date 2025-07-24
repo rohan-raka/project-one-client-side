@@ -11,7 +11,7 @@ const [deleteUserId, setDeleteUserId] = useState(null);
 
   // ✅ Load all users
   const fetchUsers = () => {
-    fetch("http://localhost:5000/users")
+    fetch(`${process.env.REACT_APP_API_URL}/users`)
       .then((res) => res.json())
       .then((data) => {
         console.log("All users:", data);
@@ -31,7 +31,7 @@ const [deleteUserId, setDeleteUserId] = useState(null);
     const userId = form.userId.value;
     const user = { name: username, userId: userId };
 
-    fetch("http://localhost:5000/addUser", {
+    fetch(`${process.env.REACT_APP_API_URL}/addUser`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -49,11 +49,13 @@ const [deleteUserId, setDeleteUserId] = useState(null);
       });
   };
 const handleDelete = (id) => {
-  setDeleteUserId(id); 
+  setDeleteUserId(id);
   setShowDeleteConfirmModal(true);
 };
+
+// `${process.env.REACT_APP_API_URL}/${deleteUserId}`
 const confirmDelete = () => {
-  fetch(`http://localhost:5000/deleteUser/${deleteUserId}`, {
+  fetch(`${process.env.REACT_APP_API_URL}/deleteUser/${deleteUserId}`, {
     method: "DELETE",
   })
     .then((res) => res.json())
@@ -83,13 +85,13 @@ const confirmDelete = () => {
           <h2 className="text-2xl text-black font-bold">Add User</h2>
         </div>
 
-        <form onSubmit={handleAddUser} className="p-6 space-y-5 text-center">
+        <form onSubmit={handleAddUser} className="p-6 space-y-5 text-center " >
           <input
             type="text"
             placeholder="Enter Username"
-            className="input w-full input-bordered border-2 border-yellow-400 p-2 rounded-md focus:border-violet-500 focus:outline-none"
+            className="input w-full input-bordered border-2 border-yellow-400 p-2 rounded-md focus:border-violet-500 focus:outline-none "
             name="username"
-            required
+            required lowercase
           />
           <input
             type="text"
