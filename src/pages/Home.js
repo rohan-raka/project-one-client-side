@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaTelegramPlane } from "react-icons/fa";
 
-function App() {
+function Home() {
   const [code, setCode] = useState("");
   const [userId, setUserId] = useState("");
   const [error, setError] = useState("");
@@ -89,4 +89,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;
