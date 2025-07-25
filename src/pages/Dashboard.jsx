@@ -1,78 +1,105 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaGamepad, FaSignOutAlt } from "react-icons/fa";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+  // Admin login protection — যদি লগইন না থাকে, redirect to /admin
+  useEffect(() => {
+    const isAdmin = localStorage.getItem("isAdmin");
+    if (isAdmin !== "true") {
+      navigate("/admin");
+    }
+  }, [navigate]);
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem("isAdmin");
+    navigate("/admin");
+  };
+
   const [showModal, setShowModal] = useState(false);
   const [users, setUsers] = useState([]);
-
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
-const [deleteUserId, setDeleteUserId] = useState(null);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState(null);
 
-
-  // ✅ Load all users
+  // Fetch users from API
   const fetchUsers = () => {
     fetch(`http://localhost:5000/users`)
       .then((res) => res.json())
-      .then((data) => {
-        console.log("All users:", data);
-        setUsers(data);
-      });
+      .then((data) => setUsers(data));
   };
 
   useEffect(() => {
-    fetchUsers(); // initial load
+    fetchUsers();
   }, []);
 
-  // ✅ Handle add user
+  // Add user handler
   const handleAddUser = (event) => {
     event.preventDefault();
     const form = event.target;
     const username = form.username.value;
     const userId = form.userId.value;
-    const user = { name: username, userId: userId };
+    const user = { name: username, userId };
 
     fetch(`http://localhost:5000/addUser`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("User added:", data);
         if (data.insertedId) {
           setShowModal(true);
           form.reset();
-          fetchUsers(); // reload table
+          fetchUsers();
         }
       });
   };
-const handleDelete = (id) => {
-  setDeleteUserId(id);
-  setShowDeleteConfirmModal(true);
-};
 
-// `${process.env.REACT_APP_API_URL}/${deleteUserId}`
-const confirmDelete = () => {
-  fetch(`http://localhost:5000/deleteUser/${deleteUserId}`, {
-    method: "DELETE",
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.deletedCount > 0) {
-        setShowDeleteConfirmModal(false);
-        setShowSuccessModal(true);
-        fetchUsers();
-      }
-    });
-};
+  // Delete user flow
+  const handleDelete = (id) => {
+    setDeleteUserId(id);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const confirmDelete = () => {
+    fetch(`http://localhost:5000/deleteUser/${deleteUserId}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.deletedCount > 0) {
+          setShowDeleteConfirmModal(false);
+          setShowSuccessModal(true);
+          fetchUsers();
+        }
+      });
+  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-600 via-pink-500 to-yellow-400 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-yellow-400 p-6">
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-6 bg-white px-6 py-4 rounded-xl shadow-lg">
+        <button
+          onClick={() => navigate("/sites")}
+          className="flex items-center gap-2 text-lg font-bold text-purple-700 hover:text-purple-900 transition"
+        >
+          <FaGamepad className="text-xl" />
+          All Games
+        </button>
+        <button
+          onClick={handleAdminLogout}
+          className="flex items-center gap-2 text-lg font-bold text-red-600 hover:text-red-800 transition"
+        >
+          <FaSignOutAlt className="text-xl" />
+          Logout
+        </button>
+      </div>
 
-      {/* ✅ FORM BOX */}
-      <div className="bg-white w-full max-w-md rounded-xl shadow-lg overflow-hidden">
+      {/* ADD USER FORM */}
+      <div className="bg-white w-full max-w-md mx-auto rounded-xl shadow-lg overflow-hidden">
         <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-center p-6">
           <div className="avatar mb-2">
             <div className="w-16 rounded-full ring ring-white ring-offset-2 mx-auto">
@@ -85,35 +112,39 @@ const confirmDelete = () => {
           <h2 className="text-2xl text-black font-bold">Add User</h2>
         </div>
 
-        <form onSubmit={handleAddUser} className="p-6 space-y-5 text-center " >
+        <form onSubmit={handleAddUser} className="p-6 space-y-5 text-center">
           <input
             type="text"
             placeholder="Enter Username"
-            className="input w-full input-bordered border-2 border-yellow-400 p-2 rounded-md focus:border-violet-500 focus:outline-none "
             name="username"
-            required lowercase
+            required
+            className="input w-full border-2 border-yellow-400 p-2 rounded-md focus:border-violet-500 focus:outline-none"
           />
           <input
             type="text"
             placeholder="Enter User ID"
-            className="input w-full input-bordered border-2 border-yellow-400 p-2 rounded-md focus:border-violet-500 focus:outline-none"
             name="userId"
             required
             maxLength={9}
+            className="input w-full border-2 border-yellow-400 p-2 rounded-md focus:border-violet-500 focus:outline-none"
           />
           <button
             type="submit"
-            className="btn w-full bg-gradient-to-r from-orange-400 to-yellow-500 hover:from-yellow-500 hover:to-orange-400 text-white font-bold py-2 rounded-md tracking-wider shadow-md hover:shadow-lg transition"
+            className="btn w-full bg-gradient-to-r from-orange-400 to-yellow-500 hover:from-yellow-500 hover:to-orange-400 text-white font-bold py-2 rounded-md shadow-md hover:shadow-lg transition"
           >
             Submit
           </button>
         </form>
       </div>
 
-      {/* ✅ Table */}
-      <div className="w-full max-w-5xl mt-12">
-        <h2 className="text-3xl font-bold mb-4 text-center  text-black">User Data  </h2>
-        <h2 className="text-xl text-white font-bold mb-4 text-center ">Total User: <span className="text-black">({users.length})</span> </h2>
+      {/* USER TABLE */}
+      <div className="w-full max-w-5xl mt-12 mx-auto">
+        <h2 className="text-3xl font-bold mb-4 text-center text-black">
+          User Data
+        </h2>
+        <h2 className="text-xl text-white font-bold mb-4 text-center">
+          Total User: <span className="text-black">({users.length})</span>
+        </h2>
         <div className="overflow-x-auto rounded-sm shadow-md bg-white">
           <table className="table w-full border border-gray-200 text-center">
             <thead>
@@ -125,7 +156,7 @@ const confirmDelete = () => {
               </tr>
             </thead>
             <tbody>
-              {Array.isArray(users) && users.length > 0 ? (
+              {users.length > 0 ? (
                 users.map((user, index) => (
                   <tr key={user._id || index} className="hover:bg-gray-100">
                     <td className="border py-2 font-medium">{index + 1}</td>
@@ -153,7 +184,7 @@ const confirmDelete = () => {
         </div>
       </div>
 
-      {/* ✅ Modal */}
+      {/* MODALS */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
           <div className="modal-box relative py-10 bg-white text-center w-11/12 mx-auto shadow-xl rounded-lg">
@@ -170,45 +201,48 @@ const confirmDelete = () => {
         </div>
       )}
 
-{showDeleteConfirmModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-    <div className="modal-box relative bg-white text-center shadow-xl rounded-lg w-11/12 mx-auto p-6">
-      <h3 className="text-lg font-bold text-red-600 mb-4">Confirm Delete</h3>
-      <p className="mb-6 text-gray-700">Are you sure you want to delete this user?</p>
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={confirmDelete}
-          className="btn p-2 rounded-md bg-red-500 hover:bg-red-600 text-white"
-        >
-          Yes, Delete
-        </button>
-        <button
-          onClick={() => setShowDeleteConfirmModal(false)}
-          className="btn p-2 rounded-md bg-gray-300 hover:bg-gray-400 text-black"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      {showDeleteConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="modal-box relative bg-white text-center shadow-xl rounded-lg w-11/12 mx-auto p-6">
+            <h3 className="text-lg font-bold text-red-600 mb-4">
+              Confirm Delete
+            </h3>
+            <p className="mb-6 text-gray-700">
+              Are you sure you want to delete this user?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={confirmDelete}
+                className="btn p-2 rounded-md bg-red-500 hover:bg-red-600 text-white"
+              >
+                Yes, Delete
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirmModal(false)}
+                className="btn p-2 rounded-md bg-gray-300 hover:bg-gray-400 text-black"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-{showSuccessModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-    <div className="modal-box relative bg-white text-center shadow-xl rounded-lg max-w-sm mx-auto py-10 px-6">
-      <button
-        onClick={() => setShowSuccessModal(false)}
-        className="absolute right-4 top-4 text-sm font-bold text-gray-500 hover:text-red-500"
-      >
-        Close
-      </button>
-      <h3 className="font-bold text-lg text-green-600 mb-2">User Deleted Successfully!</h3>
-    </div>
-  </div>
-)}
-
-
-
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="modal-box relative bg-white text-center shadow-xl rounded-lg max-w-sm mx-auto py-10 px-6">
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="absolute right-4 top-4 text-sm font-bold text-gray-500 hover:text-red-500"
+            >
+              Close
+            </button>
+            <h3 className="font-bold text-lg text-green-600 mb-2">
+              User Deleted Successfully!
+            </h3>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
