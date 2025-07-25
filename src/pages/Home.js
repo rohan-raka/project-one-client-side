@@ -20,33 +20,32 @@ function Home() {
   useEffect(() => {
     setCode(generateCode());
   }, []);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(""); // reset error
+  try {
+    const response = await fetch(`http://localhost:5000/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ userId })
+    });
 
-    //
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/validate-user`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ userId })
-      });
+    const data = await response.json();
 
-      const data = await response.json();
-
-      if (data.success) {
-        navigate("/sites"); // ✅ Redirect if userId is valid
-      } else {
-        setError(data.message); // ❌ Show error if invalid
-      }
-    } catch (err) {
-      setError("Server error. Please try again later.");
-      console.error("Validation error:", err);
+    if (data.success) {
+      localStorage.setItem("token", data.token); // ✅ Save token
+      navigate("/sites");
+    } else {
+      setError(data.message);
     }
-  };
+  } catch (err) {
+    setError("Server error. Please try again later.");
+    console.error("Validation error:", err);
+  }
+};
 
   return (
     <div className="flex flex-col items-center justify-center  bg-gray-100 px-4 py-5 text-center">

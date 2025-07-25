@@ -11,7 +11,7 @@ const [deleteUserId, setDeleteUserId] = useState(null);
 
   // ✅ Load all users
   const fetchUsers = () => {
-    fetch(`${process.env.REACT_APP_API_URL}/users`)
+    fetch(`http://localhost:5000/users`)
       .then((res) => res.json())
       .then((data) => {
         console.log("All users:", data);
@@ -31,7 +31,7 @@ const [deleteUserId, setDeleteUserId] = useState(null);
     const userId = form.userId.value;
     const user = { name: username, userId: userId };
 
-    fetch(`${process.env.REACT_APP_API_URL}/addUser`, {
+    fetch(`http://localhost:5000/addUser`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ const handleDelete = (id) => {
 
 // `${process.env.REACT_APP_API_URL}/${deleteUserId}`
 const confirmDelete = () => {
-  fetch(`${process.env.REACT_APP_API_URL}/deleteUser/${deleteUserId}`, {
+  fetch(`http://localhost:5000/deleteUser/${deleteUserId}`, {
     method: "DELETE",
   })
     .then((res) => res.json())

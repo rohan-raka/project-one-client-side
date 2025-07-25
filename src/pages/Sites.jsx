@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTelegramPlane, FaBell, FaHome } from 'react-icons/fa';
+import LogoutButton from './LogoutButton';
 
 const App = () => {
   const navigate = useNavigate();
@@ -71,10 +72,11 @@ const App = () => {
 
       {/* Footer */}
       <footer className="bg-[#b72d40] py-4">
-        <div className="flex justify-center">
+        <div className="flex justify-around">
           <FaHome className="text-white text-3xl cursor-pointer hover:text-gray-300" />
+          <LogoutButton />
         </div>
-      </footer>
+   </footer>
     </div>
   );
 };
