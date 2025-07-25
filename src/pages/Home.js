@@ -8,6 +8,7 @@ function Home() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // 🔐 Generate device code
   const generateCode = () => {
     const characters = "ATKLHSDFLKUadenoqtwxz0123456789";
     let result = "";
@@ -20,35 +21,53 @@ function Home() {
   useEffect(() => {
     setCode(generateCode());
   }, []);
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
 
-  try {
-    const response = await fetch(`http://localhost:5000/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ userId })
-    });
+  // 🔐 Login Submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-    const data = await response.json();
+    try {
+      const response = await fetch(`http://localhost:5000/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userId })
+      });
 
-    if (data.success) {
-      localStorage.setItem("token", data.token); // ✅ Save token
-      navigate("/sites");
-    } else {
-      setError(data.message);
+      const data = await response.json();
+
+      if (data.success) {
+        // ✅ Save token
+        localStorage.setItem("token", data.token);
+
+        // ✅ Immediately verify the token
+        const verifyRes = await fetch(`http://localhost:5000/verifyToken`, {
+          headers: {
+            Authorization: `Bearer ${data.token}`
+          }
+        });
+
+        if (!verifyRes.ok) {
+          localStorage.removeItem("token");
+          setError("Login failed. Please try again.");
+        } else {
+          navigate("/sites");
+        }
+
+      } else {
+        setError(data.message);
+      }
+
+    } catch (err) {
+      setError("Server error. Please try again later.");
+      console.error("Login error:", err);
     }
-  } catch (err) {
-    setError("Server error. Please try again later.");
-    console.error("Validation error:", err);
-  }
-};
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center  bg-gray-100 px-4 py-5 text-center">
+    <div className="flex flex-col items-center justify-center bg-gray-100 px-4 py-5 text-center">
       <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
         Your unique device code copy and sent to The AGENT and Active
       </h1>
@@ -59,7 +78,7 @@ const handleSubmit = async (e) => {
 
       <div className="flex items-center gap-3 mb-6">
         <p className="text-gray-700 text-md">Contact With Admin: </p>
-        <a href="https://t.me/JokerX_H3q" target="_blank" className="text-blue-500 text-xl">Telegram</a>
+        <a href="https://t.me/JokerX_H3q" target="_blank" className="text-blue-500 text-xl" rel="noopener noreferrer">Telegram</a>
         <a href="https://t.me/JokerX_H3q" target="_blank" rel="noopener noreferrer" className="text-blue-500 text-2xl hover:text-blue-700">
           <FaTelegramPlane />
         </a>
