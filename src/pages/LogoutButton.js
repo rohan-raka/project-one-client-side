@@ -3,17 +3,29 @@ import { FiLogOut } from 'react-icons/fi';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
+const handleLogout = async () => {
+  const token = localStorage.getItem("token");
 
-  const handleLogout = () => {
-    localStorage.removeItem("token"); // ✅ Remove token
-    navigate("/"); // ⬅️ Redirect to Home
-  };
+  try {
+    await fetch("http://localhost:5000/logout", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  } catch (err) {
+    console.error("Logout error", err);
+  }
+
+  localStorage.removeItem("token");
+  navigate("/");
+};
 
   return (
      <div>
       <button
         onClick={handleLogout}
-        className="flex items-center gap-x-2 text-white px-4  rounded-md  transition duration-200"
+        className="flex items-center gap-2 bg-gray-200  hover:bg-gray-300 text-black px-4 py-2 rounded-md shadow transition duration-200"
       >
         Logout
         <FiLogOut className="text-lg" />
