@@ -16,28 +16,14 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Home Route */}
-        <Route path="/" element={
-          <PublicRoute><Home /></PublicRoute>
-        } />
-
-        {/* Public About Page */}
+        <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
         <Route path="/about" element={<About />} />
 
-        {/* Protected User Routes */}
-        <Route path="/sites" element={
-          <ProtectedRoute><Sites /></ProtectedRoute>
-        } />
-        <Route path="/plane" element={
-          <ProtectedRoute><Plane /></ProtectedRoute>
-        } />
+        <Route path="/sites" element={<ProtectedRoute><Sites /></ProtectedRoute>} />
+        <Route path="/plane" element={<ProtectedRoute><Plane /></ProtectedRoute>} />
 
-        {/* ✅ Admin-Only Dashboard */}
-        <Route path="/dashboard" element={
-          <AdminProtectedRoute><Dashboard /></AdminProtectedRoute>
-        } />
+        <Route path="/dashboard" element={<AdminProtectedRoute><Dashboard /></AdminProtectedRoute>} />
 
-        {/* Admin Login Page */}
         <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>

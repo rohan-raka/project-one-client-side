@@ -3,9 +3,10 @@ import { Navigate } from "react-router-dom";
 
 const PublicRoute = ({ children }) => {
   const token = localStorage.getItem("token");
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
-  if (token) {
-    return <Navigate to="/sites" />;
+  if (token || isAdmin) {
+    return <Navigate to="/sites" replace />;
   }
 
   return children;

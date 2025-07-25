@@ -85,7 +85,7 @@ const PlaneAnimationSVG = () => {
             </g>
 
             {/* Center Text */}
-            <text
+            <text id="crash-value"
               x="100"
               y="106"
               textAnchor="middle"

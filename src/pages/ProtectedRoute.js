@@ -4,9 +4,16 @@ import { Navigate } from "react-router-dom";
 const ProtectedRoute = ({ children }) => {
   const [authState, setAuthState] = useState("loading"); // "loading", "authenticated", "unauthenticated"
   const token = localStorage.getItem("token");
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
   useEffect(() => {
     const verify = async () => {
+      if (isAdmin) {
+        // ✅ Admin always gets access
+        setAuthState("authenticated");
+        return;
+      }
+
       if (!token) {
         setAuthState("unauthenticated");
         return;
@@ -27,13 +34,12 @@ const ProtectedRoute = ({ children }) => {
         }
       } catch (error) {
         console.error("Verification failed:", error);
-        // Don't logout on network error — just retry later
         setAuthState("unauthenticated");
       }
     };
 
     verify();
-  }, [token]);
+  }, [token, isAdmin]);
 
   if (authState === "loading") {
     return <div className="text-center mt-10 text-gray-600">Authenticating...</div>;

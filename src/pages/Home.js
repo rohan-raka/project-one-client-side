@@ -43,6 +43,7 @@ function Home() {
         localStorage.setItem("token", data.token);
 
         // ✅ Immediately verify the token
+
         const verifyRes = await fetch(`http://localhost:5000/verifyToken`, {
           headers: {
             Authorization: `Bearer ${data.token}`

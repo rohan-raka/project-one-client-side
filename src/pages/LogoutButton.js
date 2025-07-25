@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { FiLogOut } from 'react-icons/fi';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
@@ -28,7 +27,7 @@ const handleLogout = async () => {
         className="flex items-center gap-2 bg-gray-200  hover:bg-gray-300 text-black px-4 py-2 rounded-md shadow transition duration-200"
       >
         Logout
-        <FiLogOut className="text-lg" />
+     
       </button>
     </div>
   );

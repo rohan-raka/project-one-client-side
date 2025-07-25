@@ -5,7 +5,6 @@ import { FaGamepad, FaSignOutAlt } from "react-icons/fa";
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  // Admin login protection — যদি লগইন না থাকে, redirect to /admin
   useEffect(() => {
     const isAdmin = localStorage.getItem("isAdmin");
     if (isAdmin !== "true") {
@@ -26,7 +25,8 @@ const Dashboard = () => {
 
   // Fetch users from API
   const fetchUsers = () => {
-    fetch(`http://localhost:5000/users`)
+    // http://localhost:5000/users
+    fetch(`https://project-one-server-side.onrender.com/users`)
       .then((res) => res.json())
       .then((data) => setUsers(data));
   };
